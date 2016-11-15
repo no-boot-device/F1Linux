@@ -22,7 +22,7 @@ ifeq ($(config),debug_x32)
   ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m32 -g -fPIC -fpermissive -fPIC -std=c++14 -fnon-call-exceptions
   ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CFLAGS)
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
-  LIBS += -lsegvcatch
+  LIBS +=
   LDDEPS +=
   ALL_LDFLAGS += $(LDFLAGS) -L/usr/lib32 -m32 -shared
   LINKCMD = $(CXX) -o "$@" $(OBJECTS) $(RESOURCES) $(ALL_LDFLAGS) $(LIBS)
@@ -46,7 +46,7 @@ ifeq ($(config),release_x32)
   INCLUDES +=
   FORCE_INCLUDE +=
   ALL_CPPFLAGS += $(CPPFLAGS) -MMD -MP $(DEFINES) $(INCLUDES)
-  ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m32 -O2 -fPIC -fpermissive -fPIC -std=c++14 -fnon-call-exceptions -lsegvcatch
+  ALL_CFLAGS += $(CFLAGS) $(ALL_CPPFLAGS) -m32 -O2 -fPIC -fpermissive -fPIC -std=c++14 -fnon-call-exceptions
   ALL_CXXFLAGS += $(CXXFLAGS) $(ALL_CFLAGS)
   ALL_RESFLAGS += $(RESFLAGS) $(DEFINES) $(INCLUDES)
   LIBS +=
@@ -75,6 +75,7 @@ OBJECTS := \
 	$(OBJDIR)/Panels.o \
 	$(OBJDIR)/Trace.o \
 	$(OBJDIR)/VMTHooks.o \
+	$(OBJDIR)/segvcatch.o \
 
 RESOURCES := \
 
@@ -160,6 +161,9 @@ $(OBJDIR)/Trace.o: Trace.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/VMTHooks.o: VMTHooks.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/segvcatch.o: segvcatch/segvcatch.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 

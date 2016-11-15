@@ -14,10 +14,9 @@ project "Darkstorm"
    filter "configurations:Debug"
       defines { "DEBUG" }
       flags { "Symbols" }
-	  links { "segvcatch" }
 	  buildoptions{ "-fpermissive -fPIC -std=c++14 -fnon-call-exceptions" }
 
    filter "configurations:Release"
       defines { "NDEBUG" }
       optimize "On"
-	  buildoptions{ "-fpermissive -fPIC -std=c++14 -fnon-call-exceptions -lsegvcatch" }
+	  buildoptions{ "-fpermissive -fPIC -std=c++14 -fnon-call-exceptions" }

@@ -7,8 +7,7 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <thread>
-#include <stdexcept>
-#include <segvcatch.h>
+#include "segvhandlers.h"
 
 COffsets gOffsets;
 CPlayerVariables gPlayerVars;
@@ -23,8 +22,8 @@ void mainThread()
 {	
 	if (gInts.Client == NULL) //Prevent repeat callings.
 	{
-		segvcatch::init_segv(&handle_segv);
-		segvcatch::init_fpe(&handle_fpe);
+		segvcatch::init_segv();
+		segvcatch::init_fpe();
 		
 		//Gottammove those factorys up.
 		//Grab the factorys from their resptive module's EAT.
