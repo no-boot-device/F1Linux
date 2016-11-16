@@ -71,6 +71,7 @@ OBJECTS := \
 	$(OBJDIR)/Client.o \
 	$(OBJDIR)/DLLMain.o \
 	$(OBJDIR)/DynamicNetvar.o \
+	$(OBJDIR)/Esp.o \
 	$(OBJDIR)/Log.o \
 	$(OBJDIR)/Panels.o \
 	$(OBJDIR)/Trace.o \
@@ -149,6 +150,9 @@ $(OBJDIR)/DLLMain.o: DLLMain.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/DynamicNetvar.o: DynamicNetvar.cpp
+	@echo $(notdir $<)
+	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
+$(OBJDIR)/Esp.o: Esp.cpp
 	@echo $(notdir $<)
 	$(SILENT) $(CXX) $(ALL_CXXFLAGS) $(FORCE_INCLUDE) -o "$@" -MF "$(@:%.o=%.d)" -c "$<"
 $(OBJDIR)/Log.o: Log.cpp

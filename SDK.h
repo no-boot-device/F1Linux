@@ -17,6 +17,7 @@
 #include <wchar.h>
 #include "segvcatch.h"
 #include "segvhandlers.h"
+#include "classId.h"
 
 #include "DynamicNetvar.h"
 #include "Trace.h"
@@ -313,7 +314,7 @@ public:
 	char *chName;
 	RecvTable *Table;
 	ClientClass *pNextClass;
-	int iClassID;
+	classId iClassID;
 };
 
 class CHLClient

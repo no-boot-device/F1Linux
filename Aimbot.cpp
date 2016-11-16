@@ -2,17 +2,16 @@
 
 void Aimbot::CreateMove(CUserCmd *Command)
 {
-	try
-	{
+    try {
         CBaseEntity *LocalEntity = GetBaseEntity(me);
         FindTarget();
         bool hasTarget = HasTarget();
         if(hasTarget) // TODO Stop this from shooting when out of ammo.
         {
+            // force attack
             Command->buttons |= IN_ATTACK;
             if(/*!gUtil.bOnShot(LocalEntity,
-			 LocalEntity->GetActiveWeapon(), pUserCmd)*/ true)
-            {
+			 LocalEntity->GetActiveWeapon(), pUserCmd)*/ true) {
                 gInts.Engine->SetViewAngles(
                     Command->viewangles); // We're going to return false from
                 // CreateMove, so the game isn't going to
@@ -22,11 +21,10 @@ void Aimbot::CreateMove(CUserCmd *Command)
                 SilentAimFix(Command, angles);
             }
         }
-	}
-	catch(...)
-	{
-		Log::Error("Failed Aimbot::CreateMove");
-	}
+    }
+    catch(...) {
+        Log::Error("Failed Aimbot::CreateMove");
+    }
 }
 float Aimbot::GetDistance(Vector Origin)
 {
@@ -35,7 +33,8 @@ float Aimbot::GetDistance(Vector Origin)
 
     CBaseEntity *LocalEntity = GetBaseEntity(me);
 
-    if(LocalEntity == NULL) return 1.0f;
+    if(LocalEntity == NULL)
+        return 1.0f;
 
     Vector Distance = Origin - LocalEntity->GetAbsOrigin();
 
@@ -48,8 +47,7 @@ float Aimbot::GetDistance(Vector Origin)
 }
 float Aimbot::GetFOV(Vector Origin)
 {
-    try
-    {
+    try {
         CBaseEntity *BaseEntity = GetBaseEntity(me);
         Vector AngleAim         = BaseEntity->GetAbsAngles();
         Vector Aim;
@@ -61,17 +59,14 @@ float Aimbot::GetFOV(Vector Origin)
         float DotProduct = Aim.Dot(EyeDiff);
         float FoV        = RAD2DEG(acos(DotProduct));
 
-        if(FoV > 0)
-        {
+        if(FoV > 0) {
             return FoV;
         }
-        else
-        {
+        else {
             return 0;
         }
     }
-    catch(...)
-    {
+    catch(...) {
         Log::Error("Failed GetFOV");
     }
 }
@@ -86,24 +81,22 @@ bool Aimbot::GetTeam(int iIndex)
 }
 bool Aimbot::IsVisible(Vector &Enemy, CBaseEntity *BaseEntity)
 {
-    try
-    {
+    try {
         trace_t Trace;
         Ray_t Ray;
         CBaseFilter filter;
 
         Ray.Init(GetBaseEntity(me)->GetEyePosition(), Enemy);
-        gInts.Trace->TraceRay(Ray, MASK_AIMBOT | CONTENTS_HITBOX, &filter, &Trace);
+        gInts.Trace->TraceRay(Ray, MASK_AIMBOT | CONTENTS_HITBOX, &filter,
+                              &Trace);
 
-        if(Trace.m_pEnt != NULL)
-        {
+        if(Trace.m_pEnt != NULL) {
             return (Trace.m_pEnt == BaseEntity);
         }
 
         return true;
     }
-    catch(...)
-    {
+    catch(...) {
         Log::Error("Failed IsVisible");
     }
     return false;
@@ -128,12 +121,12 @@ void VectorTransform(Vector &in1, const matrix3x4 &in2, Vector &out)
 Vector Aimbot::GetHitbox(CBaseEntity *BaseEntity, int Hitbox)
 {
     Vector TargetHitbox;
-    try
-    {
+    try {
         if(BaseEntity == NULL || BaseEntity->GetIndex() == 0)
             return TargetHitbox;
 
-        StudioModel StudioHdr = gInts.ModelInfo->GetStudiomodel(BaseEntity->GetModel());
+        StudioModel StudioHdr =
+            gInts.ModelInfo->GetStudiomodel(BaseEntity->GetModel());
 
         if(!BaseEntity->SetupBones(BoneToWorld, 128, 0x100, 0))
             return TargetHitbox;
@@ -145,40 +138,35 @@ Vector Aimbot::GetHitbox(CBaseEntity *BaseEntity, int Hitbox)
 
         TargetHitbox = (Min + Max) / 2;
     }
-    catch(...)
-    {
-		Log::Error("Failed to get hitbox %i for %s (%s)",Hitbox,
-				   BaseEntity->GetClientClass()->chName,
-				   gInts.ModelInfo->GetModelName(BaseEntity->GetModel()));
+    catch(...) {
+        Log::Error("Failed to get hitbox %i for %s (%s)", Hitbox,
+                   BaseEntity->GetClientClass()->chName,
+                   gInts.ModelInfo->GetModelName(BaseEntity->GetModel()));
     }
     return TargetHitbox;
 }
 bool Aimbot::IsTargetSpot(int Index, int Hitbox)
 {
-    try
-    {
+    try {
         CBaseEntity *BaseEntity = GetBaseEntity(Index);
 
         if(BaseEntity == NULL)
             return false;
 
-		Vector TargetHitbox = GetHitbox(BaseEntity,Hitbox);
-		
-        if(IsVisible(TargetHitbox, BaseEntity))
-        {
+        Vector TargetHitbox = GetHitbox(BaseEntity, Hitbox);
+
+        if(IsVisible(TargetHitbox, BaseEntity)) {
             return true;
         }
     }
-    catch(...)
-    {
-		Log::Error("Failed IsTargetSpot");
+    catch(...) {
+        Log::Error("Failed IsTargetSpot");
     }
     return false;
 }
 int Aimbot::IsValidEntity(int Index)
 {
-    try
-    {
+    try {
         if(Index == gInts.Engine->GetLocalPlayer())
             return -1;
 
@@ -187,25 +175,20 @@ int Aimbot::IsValidEntity(int Index)
         if(BaseEntity == NULL)
             return -1;
 
-		if(BaseEntity->IsAlive() == false)
-			return -1;
+        if(BaseEntity->IsAlive() == false)
+            return -1;
 
-        const char *chName = BaseEntity->GetClientClass()->chName;
-
-		if(!strcmp(chName, "CTFPlayer")) 
-			return 0; // return target hitbox
-		
+        if(BaseEntity->GetClientClass()->iClassID == classId::CTFPlayer)
+            return 0; // return target hitbox
     }
-    catch(...)
-    {
-		Log::Error("Failed IsValidEntity");
+    catch(...) {
+        Log::Error("Failed IsValidEntity");
     }
     return -1;
 }
 bool Aimbot::IsValidTarget(int Index)
 {
-    try
-    {
+    try {
         int Return = IsValidEntity(Index);
 
         if(Return == -1)
@@ -214,52 +197,46 @@ bool Aimbot::IsValidTarget(int Index)
         if(IsTargetSpot(Index, Return) == false)
             return false;
     }
-    catch(...)
-    {
-		Log::Error("Failed IsValidtarget");
+    catch(...) {
+        Log::Error("Failed IsValidtarget");
     }
     return true;
 }
 void Aimbot::FindTarget()
 {
-    try
-    {
+    try {
         CBaseEntity *BaseEntity = GetBaseEntity(me);
 
         DropTarget();
 
         if(BaseEntity == NULL)
-			return;
+            return;
 
-		if(BaseEntity->IsDormant() == true)
-			return;
-		
-		if(BaseEntity->IsAlive() == false)
-			return;
-		
-	    if(BaseEntity->GetActiveWeapon() == NULL)
+        if(BaseEntity->IsDormant() == true)
+            return;
+
+        if(BaseEntity->IsAlive() == false)
+            return;
+
+        if(BaseEntity->GetActiveWeapon() == NULL)
             return;
 
         for(int Index = 1; Index <= gInts.EntList->GetHighestEntityIndex();
-            Index++)
-        {
-			int validTarget = IsValidTarget(Index);
-			if(validTarget)
-            {
+            Index++) {
+            int validTarget = IsValidTarget(Index);
+            if(validTarget) {
                 Target = Index;
                 AimAtTarget(GetBaseEntity(GetTarget()), IsValidEntity(Index));
             }
         }
     }
-    catch(...)
-    {
+    catch(...) {
         Log::Error("Failed FindTarget");
     }
 }
 void Aimbot::AimAtTarget(CBaseEntity *BaseEntity, int Hitbox)
 {
-    try
-    {
+    try {
         if(GetBaseEntity(me) == NULL || BaseEntity == NULL)
             return;
 
@@ -267,16 +244,14 @@ void Aimbot::AimAtTarget(CBaseEntity *BaseEntity, int Hitbox)
 
         AimSpot = GetHitbox(BaseEntity, Hitbox);
 
-		Vector AimDelta = AimSpot - GetBaseEntity(me)->GetEyePosition();
+        Vector AimDelta = AimSpot - GetBaseEntity(me)->GetEyePosition();
 
-        VectorAngles(AimDelta,
-                     AimAngles);
+        VectorAngles(AimDelta, AimAngles);
 
         ClampAngle(AimAngles);
     }
-    catch(...)
-    {
-		Log::Error("Failed AimAttarget");
+    catch(...) {
+        Log::Error("Failed AimAttarget");
     }
 }
 void Aimbot::SilentAimFix(CUserCmd *Cmd, Vector &ViewAngles)
@@ -285,7 +260,7 @@ void Aimbot::SilentAimFix(CUserCmd *Cmd, Vector &ViewAngles)
     float Speed = sqrt(Silent.x * Silent.x + Silent.y * Silent.y);
     Vector Move;
     VectorAngles(Silent, Move);
-    float Yaw = DEG2RAD(ViewAngles.y - Cmd->viewangles.y + Move.y);
+    float Yaw        = DEG2RAD(ViewAngles.y - Cmd->viewangles.y + Move.y);
     Cmd->forwardmove = cos(Yaw) * Speed;
     Cmd->sidemove    = sin(Yaw) * Speed;
     Cmd->viewangles  = ViewAngles;
