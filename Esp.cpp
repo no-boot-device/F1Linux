@@ -9,13 +9,13 @@ void Esp::PaintTraverse()
 		CBaseEntity *baseEntity = GetBaseEntity(i);
 
 		if(baseEntity == nullptr)
-			return;
+			continue;
 
 		if(baseEntity->IsDormant())
-			return;
+			continue;
 
 		if(baseEntity->IsAlive() == false)
-			return;
+			continue;
 
 		if(baseEntity->GetClientClass()->iClassID == classId::CTFPlayer)
 		{
